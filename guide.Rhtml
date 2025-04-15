@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circular Urban Regeneration Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* Fade-in animation */
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* Interactive card hover effect */
+        .interactive-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .interactive-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+
+        /* Tab styling */
+        .tab-button.active { background-color: #3b82f6; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Sankey visualization styling */
+        .sankey-node { background-color: #60a5fa; padding: 0.5rem 1rem; border-radius: 0.375rem; color: white; text-align: center; margin-bottom: 0.5rem; font-weight: 600; }
+        .sankey-flow { height: 10px; background-color: #93c5fd; border-radius: 5px; margin: 5px 0; position: relative; transition: width 0.5s ease-in-out; }
+
+        /* Stakeholder map styling */
+        .stakeholder-node { cursor: pointer; transition: background-color 0.3s ease; }
+        .stakeholder-node:hover { background-color: #dbeafe; }
+
+        /* Challenge item styling */
+        .challenge-item { cursor: pointer; transition: background-color 0.2s ease; }
+        .challenge-item:hover { background-color: #fee2e2; }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6); /* Dimmed background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000; /* Ensure it's on top */
+            opacity: 0; /* Hidden by default */
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            max-width: 90%; /* Responsive width */
+            width: 700px; /* Max width */
+            max-height: 80vh; /* Limit height and allow scrolling */
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.95); /* Slight zoom effect */
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #6b7280; /* gray-500 */
+        }
+         .modal-close-button:hover {
+             color: #1f2937; /* gray-800 */
+         }
+         /* Style for content within modal */
+         .modal-body h4 {
+             font-size: 1.125rem; /* text-lg */
+             font-weight: 600; /* font-semibold */
+             margin-top: 1rem;
+             margin-bottom: 0.5rem;
+             color: #1d4ed8; /* blue-700 */
+         }
+         .modal-body ul {
+             list-style: disc;
+             margin-left: 1.5rem;
+             margin-bottom: 1rem;
+             color: #4b5563; /* gray-600 */
+             font-size: 0.875rem; /* text-sm */
+         }
+          .modal-body p {
+             margin-bottom: 0.75rem;
+             color: #4b5563; /* gray-600 */
+             font-size: 0.875rem; /* text-sm */
+             line-height: 1.6;
+         }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="text-2xl font-bold text-blue-600">Circular City Recipes</div>
+            <div class="hidden md:flex space-x-4">
+                <a href="#starters" class="text-gray-600 hover:text-blue-600 transition duration-300">Starters</a>
+                <a href="#main-course" class="text-gray-600 hover:text-blue-600 transition duration-300">Main Course</a>
+                <a href="#dessert" class="text-gray-600 hover:text-blue-600 transition duration-300">Dessert</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden bg-white py-2">
+            <a href="#starters" class="block px-6 py-2 text-gray-600 hover:bg-blue-50">Starters</a>
+            <a href="#main-course" class="block px-6 py-2 text-gray-600 hover:bg-blue-50">Main Course</a>
+            <a href="#dessert" class="block px-6 py-2 text-gray-600 hover:bg-blue-50">Dessert</a>
+        </div>
+    </header>
+
+    <section class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-20 px-6 text-center">
+        <div class="container mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">A Practical Guide to Circular Urban Regeneration</h1>
+            <p class="text-lg md:text-xl mb-8">Explore interactive "recipes" for integrating the circular economy into city renewal.</p>
+            <a href="#starters" class="bg-white text-blue-600 font-semibold py-2 px-6 rounded-full hover:bg-gray-100 transition duration-300">Start Cooking!</a>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="starters" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-2 text-center text-blue-700">STARTERS</h2>
+            <p class="text-xl text-gray-600 mb-8 text-center">Understanding the Urban Context</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-blue-600">Recipe 1: Assessing the Current State</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Tools and methods for understanding resource flows, waste systems, and stakeholders.</p>
+                        <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Visualize Resource Flow (Simplified)</h4>
+                             <div class="flex items-center justify-between mb-2">
+                                <div class="sankey-node w-1/3 text-xs">Inputs</div>
+                                <div class="flex-grow mx-2"><div id="flow1" class="sankey-flow w-0"></div></div>
+                                <div class="sankey-node w-1/3 text-xs">City System</div>
+                            </div>
+                             <div class="flex items-center justify-between">
+                                <div class="sankey-node w-1/3 text-xs">City System</div>
+                                <div class="flex-grow mx-2"><div id="flow2" class="sankey-flow w-0"></div></div>
+                                <div class="sankey-node w-1/3 text-xs">Outputs</div>
+                            </div>
+                            <button onclick="animateFlows()" class="mt-3 text-xs text-blue-500 hover:underline">Animate Flow</button>
+                            <p class="text-xs text-gray-500 mt-1">Illustrates Material Flow Analysis (MFA).</p>
+                        </div>
+                    </div>
+                    <button onclick="openModal('recipe1')" class="mt-4 w-full bg-blue-500 text-white text-sm py-2 px-4 rounded hover:bg-blue-600 transition duration-200">Read More</button>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-blue-600">Recipe 2: Identifying Opportunities</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Pinpointing areas for circular integration, like leveraging "wastescapes" and applying core CE principles.</p>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Explore Opportunities</h4>
+                            <div class="space-y-1">
+                                <button onclick="showOpportunity('buildings')" class="w-full text-left p-1 bg-blue-50 hover:bg-blue-100 rounded transition duration-200 text-xs">
+                                    <span class="font-medium">🏢 Built Environment</span>
+                                </button>
+                                 <button onclick="showOpportunity('waste')" class="w-full text-left p-1 bg-blue-50 hover:bg-blue-100 rounded transition duration-200 text-xs">
+                                    <span class="font-medium">🗑️ Waste Streams</span>
+                                </button>
+                                 <button onclick="showOpportunity('spaces')" class="w-full text-left p-1 bg-blue-50 hover:bg-blue-100 rounded transition duration-200 text-xs">
+                                    <span class="font-medium">🌳 Underutilized Spaces</span>
+                                </button>
+                            </div>
+                            <div id="opportunity-details" class="mt-2 p-2 bg-gray-100 rounded text-xs text-gray-700 hidden">Select an area.</div>
+                        </div>
+                    </div>
+                    <button onclick="openModal('recipe2')" class="mt-4 w-full bg-blue-500 text-white text-sm py-2 px-4 rounded hover:bg-blue-600 transition duration-200">Read More</button>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-blue-600">Recipe 3: Policy & Regulation</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Understanding the EU and local policies that enable or hinder circularity in urban regeneration.</p>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Key EU Policies</h4>
+                            <div class="flex border-b mb-2">
+                                <button class="tab-button flex-1 py-1 px-1 text-xs focus:outline-none active" onclick="showTab('policy-tab', this, 'ceap')">CE Action Plan</button>
+                                <button class="tab-button flex-1 py-1 px-1 text-xs focus:outline-none" onclick="showTab('policy-tab', this, 'wfd')">Waste Framework</button>
+                                <button class="tab-button flex-1 py-1 px-1 text-xs focus:outline-none" onclick="showTab('policy-tab', this, 'ua')">Urban Agenda</button>
+                            </div>
+                            <div id="ceap" class="tab-content active text-xs text-gray-600">Strategic framework covering design, production, consumption, waste.</div>
+                            <div id="wfd" class="tab-content text-xs text-gray-600">Sets C&D waste targets, drives selective demolition & sorting.</div>
+                            <div id="ua" class="tab-content text-xs text-gray-600">Recognizes CE for urban quality, fosters collaboration & solutions.</div>
+                        </div>
+                    </div>
+                     <button onclick="openModal('recipe3')" class="mt-4 w-full bg-blue-500 text-white text-sm py-2 px-4 rounded hover:bg-blue-600 transition duration-200">Read More</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="main-course" class="mb-16 fade-in">
+             <h2 class="text-3xl font-bold mb-2 text-center text-green-700">MAIN COURSE</h2>
+            <p class="text-xl text-gray-600 mb-8 text-center">Sparking Change through Circular Initiatives</p>
+             <div class="grid md:grid-cols-3 gap-8">
+                 <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-green-600">Recipe 4: Practical Strategies</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Implementing material reuse, reducing construction waste, fostering local circular businesses.</p>
+                        <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Strategy Spotlights</h4>
+                            <ul class="list-disc list-inside text-xs text-gray-700 space-y-1">
+                                <li>Urban Reuse Centers</li>
+                                <li>Pre-Demolition Audits</li>
+                                <li>Adaptive Reuse</li>
+                                <li>Digital Tools (BIM)</li>
+                                <li>Maker Spaces/Repair Cafes</li>
+                                <li>Circular Procurement</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button onclick="openModal('recipe4')" class="mt-4 w-full bg-green-500 text-white text-sm py-2 px-4 rounded hover:bg-green-600 transition duration-200">Read More</button>
+                </div>
+
+                 <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-green-600">Recipe 5: Engaging Stakeholders</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Methods for effective engagement: participatory planning, networks, digital tools.</p>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Key Stakeholder Groups</h4>
+                            <div class="grid grid-cols-2 gap-1 text-xs">
+                                <div class="stakeholder-node p-1 border rounded text-center bg-blue-50" onclick="showStakeholderInfo('Govt')">Government</div>
+                                <div class="stakeholder-node p-1 border rounded text-center bg-green-50" onclick="showStakeholderInfo('Biz')">Business</div>
+                                <div class="stakeholder-node p-1 border rounded text-center bg-yellow-50" onclick="showStakeholderInfo('Academia')">Academia</div>
+                                <div class="stakeholder-node p-1 border rounded text-center bg-purple-50" onclick="showStakeholderInfo('Civil')">Civil Society</div>
+                            </div>
+                             <div id="stakeholder-info" class="mt-2 p-2 bg-gray-100 rounded text-xs text-gray-700 hidden">Click a group.</div>
+                        </div>
+                    </div>
+                    <button onclick="openModal('recipe5')" class="mt-4 w-full bg-green-500 text-white text-sm py-2 px-4 rounded hover:bg-green-600 transition duration-200">Read More</button>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-green-600">Recipe 6: Financing & Models</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Exploring funding (EU grants, private investment, PPPs) and sustainable business models (PaaS, leasing).</p>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Funding Avenues</h4>
+                            <div class="space-y-1 text-xs">
+                                <div class="p-1 bg-green-50 rounded">🇪🇺 EU Funds</div>
+                                <div class="p-1 bg-green-50 rounded">💰 Private Investment</div>
+                                <div class="p-1 bg-green-50 rounded">🤝 PPPs</div>
+                                <div class="p-1 bg-green-50 rounded">🔄 Circular Business Models</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="openModal('recipe6')" class="mt-4 w-full bg-green-500 text-white text-sm py-2 px-4 rounded hover:bg-green-600 transition duration-200">Read More</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="dessert" class="mb-16 fade-in">
+             <h2 class="text-3xl font-bold mb-2 text-center text-purple-700">DESSERT</h2>
+            <p class="text-xl text-gray-600 mb-8 text-center">Supporting Structural Change & Long-Term Collaboration</p>
+             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                 <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-purple-600">Recipe 7: Embedding Circularity</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Integrating CE into policies, planning, and fostering cross-departmental collaboration.</p>
+                        <div class="mt-4 border-t pt-4 text-xs text-gray-700">
+                            <p><strong>Key Actions:</strong> Roadmaps, internal coordination, partnerships, planning updates.</p>
+                        </div>
+                    </div>
+                    <button onclick="openModal('recipe7')" class="mt-4 w-full bg-purple-500 text-white text-sm py-2 px-4 rounded hover:bg-purple-600 transition duration-200">Read More</button>
+                </div>
+
+                 <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-purple-600">Recipe 8: Utilizing Toolkits</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Adapting existing guidance from EU cities and orgs (C3, City Scan, ICLEI Framework).</p>
+                        <div class="mt-4 border-t pt-4 text-xs text-gray-700">
+                            <p><strong>Examples:</strong> C3, City Scan, ICLEI Framework, CCD Report.</p>
+                            <a href="#" class="text-blue-500 hover:underline text-xs">(Links needed)</a>
+                        </div>
+                    </div>
+                     <button onclick="openModal('recipe8')" class="mt-4 w-full bg-purple-500 text-white text-sm py-2 px-4 rounded hover:bg-purple-600 transition duration-200">Read More</button>
+                </div>
+
+                 <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-purple-600">Recipe 9: Addressing Challenges</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Identifying potential issues ("allergen alerts") and mitigation strategies.</p>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Common Challenges</h4>
+                            <div class="space-y-1 text-xs">
+                                <div class="challenge-item border p-1 rounded" onclick="showChallengeInfo('Resistance')">Resistance</div>
+                                <div class="challenge-item border p-1 rounded" onclick="showChallengeInfo('Complexity')">Complexity</div>
+                                <div class="challenge-item border p-1 rounded" onclick="showChallengeInfo('Knowledge')">Expertise</div>
+                                <div class="challenge-item border p-1 rounded" onclick="showChallengeInfo('Finance')">Finance</div>
+                                <div class="challenge-item border p-1 rounded" onclick="showChallengeInfo('Policy')">Policy Gaps</div>
+                            </div>
+                            <div id="challenge-info" class="mt-2 p-2 bg-red-50 rounded text-xs text-red-700 hidden">Click challenge.</div>
+                        </div>
+                    </div>
+                     <button onclick="openModal('recipe9')" class="mt-4 w-full bg-purple-500 text-white text-sm py-2 px-4 rounded hover:bg-purple-600 transition duration-200">Read More</button>
+                </div>
+
+                 <div class="bg-white p-6 rounded-lg shadow-lg interactive-card flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-3 text-purple-600">Recipe 10: Measuring Impact</h3>
+                        <p class="text-gray-700 mb-4 text-sm">Guidance on measuring success using KPIs, MFA, LCA, and socio-economic metrics.</p>
+                         <div class="mt-4 border-t pt-4 text-xs text-gray-700">
+                            <p><strong>Methods:</strong> KPIs, MFA/LCA, social & economic assessment.</p>
+                        </div>
+                    </div>
+                    <button onclick="openModal('recipe10')" class="mt-4 w-full bg-purple-500 text-white text-sm py-2 px-4 rounded hover:bg-purple-600 transition duration-200">Read More</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 px-6">
+        <div class="container mx-auto text-center">
+            <p class="mb-2">&copy; 2025 A Practical Guidebook for Circular Economy Integration in Urban Regeneration.</p>
+            <p class="text-xs text-gray-400">This is a conceptual representation for informational purposes.</p>
+        </div>
+    </footer>
+
+    <div id="recipe-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button onclick="closeModal()" class="modal-close-button">&times;</button>
+            <h2 id="modal-title" class="text-2xl font-bold mb-4 text-center">Recipe Title</h2>
+            <div id="modal-body" class="modal-body">
+                <p>Loading recipe details...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Recipe Content Data ---
+        // (Summarized from the provided PDF)
+        const recipeDetails = {
+            recipe1: {
+                title: "Recipe 1: Assessing the Current State",
+                content: `
+                    <p>Understanding the existing urban context is the first step. This involves assessing resource flows, waste systems, and stakeholders.</p>
+                    <h4>Key Tools & Methods:</h4>
+                    <ul>
+                        <li><strong>Material Flow Analysis (MFA):</strong> Quantifies materials/energy entering, circulating, and exiting the city. Uses steps like defining boundaries, data acquisition, calculation, and interpretation (e.g., Sankey diagrams). Reveals inefficiencies and targets for intervention (e.g., high C&D waste). Example: REFLOW project mapped flows in 6 EU cities.</li>
+                        <li><strong>Urban Circularity Assessment (UCA):</strong> Builds on MFA, adding material stock accounting and circularity indicators (e.g., CityLoops project). Crucial for understanding material accumulation (e.g., in buildings).</li>
+                        <li><strong>Waste Management Assessment Tools:</strong> Evaluate performance and identify improvements (e.g., Waste Wise Cities Tool - WaCT, Municipal Solid Waste Decision Support Tool - MSW DST). Essential for aligning with EU targets (Circular Economy Action Plan).</li>
+                        <li><strong>Stakeholder Mapping & Analysis:</strong> Identifies actors, their interests, influence, and potential impact (e.g., using Power vs. Interest grids, Stakeholder Analysis Tables). Vital for targeted engagement and collaboration. Examples: CCRI, European Circular Economy Stakeholder Platform, DUT Partnership mapping.</li>
+                    </ul>
+                    <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Comprehensive data on resource flows is critical.</li>
+                        <li>Adopting an "urban metabolism" perspective encourages integrated, systemic approaches.</li>
+                        <li>Success relies on both technology and active stakeholder engagement/social innovation.</li>
+                    </ul>
+                `
+            },
+            recipe2: {
+                title: "Recipe 2: Identifying Opportunities",
+                content: `
+                    <p>Once the context is understood, identify specific opportunities to integrate circular principles.</p>
+                    <h4>Key Opportunity Areas:</h4>
+                    <ul>
+                        <li><strong>Leveraging Overlooked Resources:</strong> Valuing material (polluted land, idle buildings) and non-material assets (local knowledge, labor) in informal settlements or "wastescapes". Integrating informal waste management can create jobs.</li>
+                        <li><strong>Applying Core CE Principles:</strong>
+                            <ul>
+                                <li><em>Eliminate waste/pollution:</em> Design out waste from the start.</li>
+                                <li><em>Circulate products/materials:</em> Keep resources in use at highest value (e.g., material reuse centers, product-as-a-service models).</li>
+                                <li><em>Regenerate nature:</em> Enhance natural systems (e.g., green infrastructure).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Focusing on the Built Environment:</strong> A critical sector due to high resource use/waste. Opportunities include material reuse, minimizing C&D waste (efficient design, selective demolition), enhancing energy efficiency, using recycled/low-impact materials.</li>
+                        <li><strong>Analyzing Urban Metabolism:</strong> Use data (e.g., from MFA) to target specific flows. High organic waste could lead to local composting or biogas facilities.</li>
+                    </ul>
+                    <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Urban regeneration is a key chance to shift from linear ("take-make-dispose") to circular models.</li>
+                        <li>Circularity addresses interconnected environmental, social, and economic dimensions (green jobs, social inclusion, quality of life).</li>
+                    </ul>
+                `
+            },
+             recipe3: {
+                title: "Recipe 3: Policy & Regulatory Landscape",
+                content: `
+                    <p>Navigating relevant policies at EU, national, and regional levels is crucial for identifying enablers and barriers.</p>
+                    <h4>Key EU Frameworks:</h4>
+                    <ul>
+                        <li><strong>Circular Economy Action Plan (CEAP):</strong> Comprehensive strategy covering sectors like construction, waste, sustainable products. Guides local policy alignment and potential funding access. Emphasizes eco-design, waste prevention, secondary raw materials.</li>
+                        <li><strong>Waste Framework Directive (WFD):</strong> Sets specific targets for Construction & Demolition (C&D) waste recovery/recycling. Obliges cities to implement measures like selective demolition and improved sorting infrastructure.</li>
+                        <li><strong>EU Urban Agenda:</strong> Recognizes CE as key for urban quality of life. Encourages innovative solutions (reuse, repair, etc.) and provides a platform for collaboration and knowledge sharing among cities, countries, and the Commission.</li>
+                    </ul>
+                     <h4>National/Regional & Local Considerations:</h4>
+                     <ul>
+                        <li>Member states/regions often have specific CE strategies, targets, or funding that interact with EU frameworks. Understanding these is vital.</li>
+                        <li>Integration can be complex; may require combining policy support with grassroots initiatives.</li>
+                        <li><strong>Spatial Planning:</strong> Increasingly seen as critical for enabling CE (integrating principles into plans, zoning, building codes).</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Policy coherence across all governance levels (EU, national, regional, local) is paramount to avoid conflicting regulations and create an enabling environment.</li>
+                    </ul>
+                `
+            },
+             recipe4: {
+                title: "Recipe 4: Practical Strategies & Pilot Projects",
+                content: `
+                    <p>Implement concrete actions focusing on material reuse, waste reduction, and fostering circular businesses.</p>
+                    <h4>Promoting Material Reuse:</h4>
+                    <ul>
+                        <li><strong>Urban Reuse Centers / Material Banks:</strong> Hubs for collecting, processing, redistributing salvaged materials (e.g., Batitec store, Grenoble). Divert waste, support local CE.</li>
+                        <li><strong>Pre-Demolition Audits:</strong> Identify reusable materials within existing buildings before demolition.</li>
+                        <li><strong>Selective Demolition:</strong> Carefully dismantle buildings to recover high-quality materials for reuse. Requires expertise and handling systems.</li>
+                        <li><strong>Adaptive Reuse:</strong> Prioritize repurposing existing buildings to reduce new construction needs, conserve embodied energy, and preserve character.</li>
+                    </ul>
+                     <h4>Reducing Construction Waste:</h4>
+                     <ul>
+                        <li><strong>Robust Site Waste Management Protocols:</strong> Clear guidelines for sorting, adequate infrastructure, monitoring waste streams.</li>
+                        <li><strong>Digital Tools (BIM):</strong> Precise design/estimation minimizes waste; facilitates design for deconstruction.</li>
+                        <li><strong>Innovative Waste Use:</strong> Explore technologies converting C&D waste into new resources (e.g., waste minerals to cement). Support via R&D and procurement.</li>
+                    </ul>
+                     <h4>Fostering Local Circular Businesses:</h4>
+                     <ul>
+                        <li><strong>Support Ecosystem Development:</strong> Aid businesses in reuse, repair, refurbishment, recycling (business development assistance, funding access, enabling regulations).</li>
+                        <li><strong>Maker Spaces & Repair Cafes:</strong> Empower citizens, promote repair/reuse culture, support local businesses.</li>
+                        <li><strong>Circular Public Procurement:</strong> Leverage city purchasing power to create demand for circular products/services, providing stable markets.</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>High C&D waste volume is both a challenge and a major opportunity.</li>
+                        <li>Integrating CE into planning from the outset is crucial for systemic change.</li>
+                        <li>Fostering local circular businesses boosts environmental, social, and economic well-being.</li>
+                    </ul>
+                `
+            },
+             recipe5: {
+                title: "Recipe 5: Engaging Stakeholders",
+                content: `
+                    <p>Effective engagement of diverse stakeholders is crucial for successful circular integration.</p>
+                    <h4>Methods & Tools:</h4>
+                    <ul>
+                        <li><strong>Participatory Planning Approaches:</strong> Involve citizens/community groups from the start (public workshops, charrettes) to foster ownership. Participatory budgeting (e.g., OmaStadi, Helsinki) empowers residents.</li>
+                        <li><strong>Multi-Stakeholder Platforms & Networks:</strong> Facilitate collaboration and knowledge exchange between government, business, research, civil society (e.g., Barcelona Green Hub). Break down silos, build trust, co-create solutions.</li>
+                        <li><strong>Stakeholder Mapping Tools:</strong> Identify key actors, understand interests/influence (Power vs. Interest grids, analysis tables) to develop targeted engagement strategies.</li>
+                        <li><strong>Digital Engagement Tools:</strong> Broaden participation (online forums, surveys, interactive platforms) complementing traditional methods.</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Lack of effective communication/awareness is a barrier; prioritize clear, transparent strategies.</li>
+                        <li>Growing recognition of the "Quadruple Helix" approach (academia, industry, government, civil society) for systemic change.</li>
+                        <li>Meaningful engagement leads to better-informed, widely supported, resilient projects and long-term sustainability.</li>
+                    </ul>
+                `
+            },
+             recipe6: {
+                title: "Recipe 6: Innovative Financing & Business Models",
+                content: `
+                    <p>Securing funding and adopting sustainable business models are critical for implementation and long-term viability.</p>
+                    <h4>Funding Opportunities:</h4>
+                    <ul>
+                        <li><strong>Public Funding & Grants:</strong> EU sources (ERDF, Horizon Europe, EIB), national, and regional programs. Requires active identification and alignment of proposals.</li>
+                        <li><strong>Private Investment:</strong> Attract by demonstrating economic viability, long-term returns (revenue from reuse, energy savings, new businesses). Needs compelling business plans.</li>
+                        <li><strong>Public-Private Partnerships (PPPs):</strong> Leverage strengths of both sectors for complex projects (e.g., HafenCity, Hamburg). Facilitates innovation, shares risk, ensures long-term sustainability. Requires clear agreements.</li>
+                    </ul>
+                     <h4>Sustainable Business Models:</h4>
+                     <ul>
+                        <li><strong>Product-as-a-Service (PaaS):</strong> Pay for use, not ownership.</li>
+                        <li><strong>Leasing & Sharing Platforms:</strong> Maximize resource utilization.</li>
+                        <li><strong>Reuse & Remanufacturing:</strong> Create value from used materials/products.</li>
+                        <li><em>Support Mechanisms:</em> Cities can offer incentives, infrastructure, awareness campaigns.</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Challenge the misconception that regeneration is solely public sector; highlight private investment potential.</li>
+                        <li>Emphasize the significant economic benefits of CE (revenue, cost savings, jobs) to attract funders.</li>
+                        <li>Transitioning unlocks economic opportunities while addressing environmental/social challenges.</li>
+                    </ul>
+                `
+            },
+             recipe7: {
+                title: "Recipe 7: Embedding Circularity in Policies & Practices",
+                content: `
+                    <p>Go beyond projects to embed CE principles into broader policies and practices for lasting impact.</p>
+                    <h4>Approaches for Structural Change:</h4>
+                    <ul>
+                        <li><strong>Integrated CE Strategies & Roadmaps:</strong> Develop long-term plans with clear vision, goals, targets, actions across sectors (learn from Amsterdam, Copenhagen). Involve stakeholders in development.</li>
+                        <li><strong>Cross-Departmental Collaboration:</strong> Integrate CE across relevant municipal departments (planning, economic development, environment, waste). Break down silos via working groups or dedicated officers.</li>
+                        <li><strong>Strong & Lasting Partnerships:</strong> Cultivate relationships between public sector, businesses, research, civil society. Enables knowledge sharing, resource pooling, risk management. Facilitate via networking, joint projects, formal agreements.</li>
+                        <li><strong>Embedding in Urban Planning:</strong> Integrate CE into spatial plans, zoning regulations (favoring circular activities), building codes (promoting adaptive reuse, recycled materials, design for deconstruction). Sends clear signals to developers/investors.</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Lack of cohesive strategic vision leads to fragmented actions; prioritize a clear long-term goal.</li>
+                        <li>Governance is key; cities must proactively create an enabling environment for all stakeholders.</li>
+                        <li>Embedding circularity leads to more resilient, sustainable, and prosperous urban environments long-term.</li>
+                    </ul>
+                `
+            },
+             recipe8: {
+                title: "Recipe 8: Utilizing Existing Toolkits & Guidance",
+                content: `
+                    <p>Leverage the wealth of existing toolkits and guidance from EU cities and organizations, adapting them to the local context.</p>
+                    <h4>Key Resources & Frameworks:</h4>
+                    <ul>
+                        <li><strong>Circular City Centre (C3):</strong> EIB & Circle Economy initiative offering resources, practical info, advisory services, funding awareness.</li>
+                        <li><strong>Circle Economy's City Scan Program:</strong> Structured process to assess circularity level and identify opportunities via metabolism analysis and stakeholder engagement.</li>
+                        <li><strong>ICLEI's Circular City Actions Framework:</strong> Practical structure based on 5 strategies: Rethink, Regenerate, Reduce, Reuse, Recover. Guides project alignment with CE principles.</li>
+                        <li><strong>Circular Cities Declaration (CCD) Report:</strong> ICLEI & Ellen MacArthur Foundation analysis of practices across European cities. Highlights trends, solutions, challenges for peer learning.</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Growing body of knowledge means cities don't need to reinvent the wheel.</li>
+                        <li>Crucial to adapt toolkits to the specific local context (challenges, opportunities, stakeholders, resource flows, socio-economics).</li>
+                        <li>Sharing toolkits/best practices accelerates the overall transition via collaborative learning.</li>
+                    </ul>
+                `
+            },
+             recipe9: {
+                title: "Recipe 9: Addressing Challenges & Mitigating Risks",
+                content: `
+                    <p>Be aware of potential challenges ("allergen alerts") and prepare mitigation strategies.</p>
+                    <h4>Common Challenges & Mitigation:</h4>
+                    <ul>
+                        <li><strong>Resistance to Change (from established actors):</strong> <em>Mitigation:</em> Early engagement, clear communication of benefits, training/support.</li>
+                        <li><strong>Stakeholder Coordination Complexity (diverse/conflicting interests):</strong> <em>Mitigation:</em> Clear governance, multi-stakeholder platforms, facilitation, mapping tools.</li>
+                        <li><strong>Lack of Expertise/Knowledge:</strong> <em>Mitigation:</em> Training/capacity building, partnerships (research/consultants), use existing toolkits.</li>
+                        <li><strong>Financial Barriers (upfront costs):</strong> <em>Mitigation:</em> Explore diverse funding (public/private), strong business cases, innovative financing (PPPs).</li>
+                        <li><strong>Policy/Regulatory Gaps (linear economy focus):</strong> <em>Mitigation:</em> Policy advocacy, pilot projects, flexible interpretation of rules.</li>
+                        <li><strong>Lack of Reliable Data / Measurement Difficulty:</strong> <em>Mitigation:</em> Invest in data systems (MFA/UCA), establish clear KPIs, transparent monitoring.</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Purely business/technocentric approaches may miss local specificities; context-specific, socially inclusive approaches needed.</li>
+                        <li>Be aware of potential trade-offs between different CE strategies.</li>
+                        <li>Requires long-term commitment, adaptability, and a collaborative approach.</li>
+                    </ul>
+                `
+            },
+             recipe10: {
+                title: "Recipe 10: Measuring Impact & Success",
+                content: `
+                    <p>Establish effective methods to measure impact, track progress, and demonstrate value.</p>
+                    <h4>Measurement Guidance:</h4>
+                    <ul>
+                        <li><strong>Develop Clear Key Performance Indicators (KPIs):</strong> Align with project objectives and CE principles. Cover environmental (waste reduction, reuse rates, energy efficiency), social (job creation, community well-being), and economic (cost savings, business growth) aspects. Allows monitoring and transparent communication.</li>
+                        <li><strong>Utilize Material Flow Analysis (MFA):</strong> Conduct before/after interventions to quantitatively assess changes in resource consumption and waste generation. Provides data-driven evidence.</li>
+                        <li><strong>Conduct Life Cycle Assessments (LCAs):</strong> Understand comprehensive environmental impacts of strategies throughout their lifecycle. Helps identify most sustainable options and avoid unintended consequences (e.g., comparing recycled vs. virgin materials).</li>
+                        <li><strong>Measure Social & Economic Impacts:</strong> Assess job creation in CE sectors, community well-being (surveys), economic performance of circular businesses. Ensures holistic view aligned with sustainable development goals.</li>
+                    </ul>
+                     <h4>Key Insights:</h4>
+                    <ul>
+                        <li>Lack of common metrics across cities hinders comparability; work towards standardization is needed.</li>
+                        <li>Growing need to shift focus from downstream (recycling) to upstream targets (material use, consumption emissions).</li>
+                        <li>Transparent measurement and reporting build trust, demonstrate accountability, and make the case for continued investment.</li>
+                    </ul>
+                `
+            }
+        };
+
+        // --- Core JavaScript Functions ---
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Fade-in animation on scroll
+        const fadeInSections = document.querySelectorAll('.fade-in');
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // observer.unobserve(entry.target); // Optional: stop observing once visible
+                }
+            });
+        }, observerOptions);
+        fadeInSections.forEach(section => observer.observe(section));
+
+        // --- Interactive Element Functions (Card Level) ---
+
+        // Recipe 1: Animate Sankey-like flows
+        function animateFlows() {
+            const flow1 = document.getElementById('flow1');
+            const flow2 = document.getElementById('flow2');
+            flow1.style.width = '0%'; flow2.style.width = '0%';
+            setTimeout(() => { flow1.style.width = '100%'; flow2.style.width = '100%'; }, 100);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+             const startersSection = document.getElementById('starters');
+             if (startersSection.getBoundingClientRect().top < window.innerHeight) {
+                 setTimeout(animateFlows, 500);
+             }
+        });
+
+        // Recipe 2: Show Opportunity Details
+        const opportunityDetails = document.getElementById('opportunity-details');
+        function showOpportunity(type) {
+            const details = {
+                buildings: 'Reuse materials, adaptive reuse, efficient design...',
+                waste: 'Local composting, reuse centers, better sorting...',
+                spaces: 'Urban farming, community hubs, green infrastructure...'
+            };
+            opportunityDetails.textContent = details[type] || 'Select an area.';
+            opportunityDetails.classList.remove('hidden');
+        }
+
+        // Recipe 3: Tab Switching
+        function showTab(tabContainerId, buttonElement, tabIdToShow) {
+            const buttons = buttonElement.parentElement.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+            const tabContents = buttonElement.closest('.interactive-card').querySelectorAll('.tab-content'); // Find content within the card
+            tabContents.forEach(content => content.classList.remove('active'));
+            const contentToShow = document.getElementById(tabIdToShow);
+            if (contentToShow) contentToShow.classList.add('active');
+        }
+
+        // Recipe 5: Show Stakeholder Info
+        const stakeholderInfo = document.getElementById('stakeholder-info');
+        function showStakeholderInfo(group) {
+             const roles = {
+                'Govt': 'Policy, regulation, funding...',
+                'Biz': 'Innovation, implementation, jobs...',
+                'Academia': 'Research, data, tech dev...',
+                'Civil': 'Advocacy, engagement, monitoring...'
+            };
+            stakeholderInfo.textContent = roles[group] || 'Info unavailable.';
+            stakeholderInfo.classList.remove('hidden');
+        }
+
+         // Recipe 9: Show Challenge Info
+        const challengeInfo = document.getElementById('challenge-info');
+        function showChallengeInfo(challenge) {
+             const mitigations = {
+                'Resistance': 'Mitigation: Early engagement, clear benefits...',
+                'Complexity': 'Mitigation: Clear governance, platforms...',
+                'Knowledge': 'Mitigation: Capacity building, partnerships...',
+                'Finance': 'Mitigation: Diverse funding, business cases...',
+                'Policy': 'Mitigation: Policy advocacy, pilots...'
+            };
+            challengeInfo.textContent = mitigations[challenge] || 'Info unavailable.';
+            challengeInfo.classList.remove('hidden');
+        }
+
+        // --- Modal Functions ---
+        const modal = document.getElementById('recipe-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+
+        function openModal(recipeId) {
+            const details = recipeDetails[recipeId];
+            if (details) {
+                modalTitle.textContent = details.title;
+                modalBody.innerHTML = details.content; // Use innerHTML to render HTML tags
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            } else {
+                modalTitle.textContent = "Error";
+                modalBody.innerHTML = "<p>Details not found for this recipe.</p>";
+                modal.classList.add('active');
+                 document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = ''; // Restore background scrolling
+        }
+
+        // Close modal if clicking on the overlay
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key press
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+    </script>
+
+</body>
+</html>
