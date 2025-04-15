@@ -130,7 +130,7 @@ The Circular Cities Declaration (CCD) Report, a collaborative effort between ICL
 
 The increasing availability of these toolkits and guidance documents signifies a growing body of knowledge and practical experience in implementing circular economy in urban settings. Cities undertaking circular urban regeneration do not need to reinvent the wheel but can build upon these existing resources. However, it is crucial to recognize that while these toolkits provide valuable frameworks, their effective application requires careful consideration and adaptation to the specific local context. Cities need to tailor these general resources to their unique challenges, opportunities, and stakeholder landscape, taking into account their specific resource flows, waste management systems, and socio-economic conditions. The sharing of these toolkits and best practices across EU cities fosters a collaborative learning environment and accelerates the overall transition towards a circular economy in urban areas.
 
-### **Recipe 9: Addressing Challenges and Mitigating Risks: Identifying potential challenges ("allergen alerts") associated with integrating circular economy into urban regeneration and exploring mitigation strategies.**
+### **Recipe 9: Addressing Challenges and Mitigating Risks: Identifying potential challenges associated with integrating circular economy into urban regeneration and exploring mitigation strategies.**
 
 Integrating circular economy principles into urban regeneration, while offering numerous benefits, also presents potential challenges and risks that cities need to be aware of and prepared to address.
 
