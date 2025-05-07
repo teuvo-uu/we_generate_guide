@@ -1,6 +1,5 @@
 // --- Recipe Content Data ---
 // This object stores the detailed content for each "recipe" modal.
-// Summarized from the provided PDF content in the original HTML.
 const recipeDetails = {
     recipe1: {
         title: "Assessing the Current State",
@@ -10,7 +9,6 @@ const recipeDetails = {
             <ul>
                 <li><strong>Material Flow Analysis (MFA):</strong> Quantifies materials/energy entering, circulating, and exiting the city. Uses steps like defining boundaries, data acquisition, calculation, and interpretation (e.g., Sankey diagrams). Reveals inefficiencies and targets for intervention (e.g., high C&D waste). Example: REFLOW project mapped flows in 6 EU cities.</li>
                 <li><strong>Urban Circularity Assessment (UCA):</strong> Builds on MFA, adding material stock accounting and circularity indicators (e.g., CityLoops project). Crucial for understanding material accumulation (e.g., in buildings).</li>
-                <li><strong>Waste Management Assessment Tools:</strong> Evaluate performance and identify improvements (e.g., Waste Wise Cities Tool - WaCT, Municipal Solid Waste Decision Support Tool - MSW DST). Essential for aligning with EU targets (Circular Economy Action Plan).</li>
                 <li><strong>Stakeholder Mapping & Analysis:</strong> Identifies actors, their interests, influence, and potential impact (e.g., using Power vs. Interest grids, Stakeholder Analysis Tables). Vital for targeted engagement and collaboration. Examples: CCRI, European Circular Economy Stakeholder Platform, DUT Partnership mapping.</li>
             </ul>
             <h4>Key Insights:</h4>
