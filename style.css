@@ -1,0 +1,228 @@
+/* General body styling */
+body {
+    font-family: 'Inter', sans-serif; /* Sets the primary font for the page */
+    scroll-behavior: smooth;          /* Enables smooth scrolling for anchor links */
+}
+
+/* Custom scrollbar styling (for WebKit browsers like Chrome, Safari) */
+::-webkit-scrollbar {
+    width: 8px; /* Sets the width of the scrollbar */
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;     /* Background color of the scrollbar track */
+    border-radius: 10px;     /* Rounds the corners of the scrollbar track */
+}
+::-webkit-scrollbar-thumb {
+    background: #888;         /* Color of the scrollbar thumb (the draggable part) */
+    border-radius: 10px;     /* Rounds the corners of the scrollbar thumb */
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color of the scrollbar thumb on hover */
+}
+
+/* Fade-in animation styling */
+.fade-in {
+    opacity: 0;                     /* Initially invisible */
+    transform: translateY(20px);    /* Initially slightly moved down */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Smooth transition for opacity and transform */
+}
+.fade-in.visible {
+    opacity: 1;                     /* Fully visible */
+    transform: translateY(0);       /* Back to original position */
+}
+
+/* Interactive card hover effect */
+.interactive-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for transform and shadow */
+}
+.interactive-card:hover {
+    transform: translateY(-5px); /* Moves the card up slightly on hover */
+    /* Adds a more pronounced shadow on hover, using Tailwind's shadow utilities as a reference */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Tab styling for policy section */
+.tab-button.active {
+    background-color: #3b82f6; /* Tailwind's blue-500 color for active tab */
+    color: white;               /* White text for active tab */
+}
+.tab-content {
+    display: none; /* Tab content is hidden by default */
+}
+.tab-content.active {
+    display: block; /* Active tab content is shown */
+}
+
+/* Sankey visualization styling (simple representation) */
+.sankey-node {
+    background-color: #60a5fa; /* Tailwind's blue-400 color for nodes */
+    padding: 0.5rem 1rem;      /* Padding within the node */
+    border-radius: 0.375rem;   /* Rounded corners (Tailwind's rounded-md) */
+    color: white;               /* White text */
+    text-align: center;         /* Centered text */
+    margin-bottom: 0.5rem;     /* Margin below the node */
+    font-weight: 600;           /* Semi-bold font (Tailwind's font-semibold) */
+}
+.sankey-flow {
+    height: 10px;               /* Height of the flow bar */
+    background-color: #93c5fd; /* Tailwind's blue-300 color for flow */
+    border-radius: 5px;         /* Rounded corners for the flow bar */
+    margin: 5px 0;              /* Margin above and below the flow bar */
+    position: relative;         /* Needed for potential future pseudo-elements or animations */
+    transition: width 0.5s ease-in-out; /* Smooth transition for width changes (animation) */
+}
+
+/* Stakeholder map node styling */
+.stakeholder-node {
+    cursor: pointer;                /* Changes cursor to pointer on hover */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+.stakeholder-node:hover {
+    background-color: #dbeafe; /* Tailwind's blue-100 for hover background */
+}
+
+/* Challenge item styling */
+.challenge-item {
+    cursor: pointer;                /* Changes cursor to pointer on hover */
+    transition: background-color 0.2s ease; /* Smooth transition for background color */
+}
+.challenge-item:hover {
+    background-color: #fee2e2; /* Tailwind's red-100 for hover background */
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;                /* Stays in place even if the page is scrolled */
+    top: 0; left: 0; right: 0; bottom: 0; /* Covers the entire viewport */
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    display: flex;                  /* Uses flexbox to center the modal content */
+    align-items: center;            /* Vertically centers the modal content */
+    justify-content: center;        /* Horizontally centers the modal content */
+    z-index: 1000;                  /* Ensures the modal is on top of other content */
+    opacity: 0;                     /* Hidden by default (for transition) */
+    visibility: hidden;             /* Hidden by default (for transition and accessibility) */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition for showing/hiding */
+}
+.modal-overlay.active {
+    opacity: 1;                     /* Fully visible when active */
+    visibility: visible;            /* Not hidden when active */
+}
+.modal-content {
+    background-color: white;        /* White background for the modal box */
+    padding: 2rem;                  /* Padding inside the modal box */
+    border-radius: 0.5rem;          /* Rounded corners (Tailwind's rounded-lg) */
+    max-width: 90%;                 /* Responsive width, at most 90% of viewport width */
+    width: 700px;                   /* Maximum width of the modal */
+    max-height: 80vh;               /* Limits height to 80% of viewport height, allowing scrolling for tall content */
+    overflow-y: auto;               /* Adds a scrollbar if content exceeds max-height */
+    position: relative;             /* For positioning the close button absolutely within this container */
+    transform: scale(0.95);         /* Slightly scaled down by default (for transition) */
+    transition: transform 0.3s ease;/* Smooth transition for the scale effect */
+}
+.modal-overlay.active .modal-content {
+    transform: scale(1);            /* Scales to normal size when modal is active */
+}
+.modal-close-button {
+    position: absolute;             /* Positioned relative to .modal-content */
+    top: 1rem;                      /* 1rem from the top */
+    right: 1rem;                    /* 1rem from the right */
+    background: none;               /* No background */
+    border: none;                   /* No border */
+    font-size: 1.5rem;              /* Size of the close icon (e.g., '×') */
+    line-height: 1;                 /* Ensures the icon is centered vertically */
+    cursor: pointer;                /* Changes cursor to pointer on hover */
+    color: #6b7280;                 /* Tailwind's gray-500 color for the icon */
+}
+ .modal-close-button:hover {
+     color: #1f2937;                /* Tailwind's gray-800 color on hover */
+ }
+
+ /* Style for content within the modal body */
+ .modal-body h4 {
+     font-size: 1.125rem;           /* Tailwind's text-lg */
+     font-weight: 600;              /* Tailwind's font-semibold */
+     margin-top: 1rem;              /* Margin above the heading */
+     margin-bottom: 0.5rem;         /* Margin below the heading */
+     color: #1d4ed8;                /* Tailwind's blue-700 color */
+ }
+ .modal-body ul {
+     list-style: disc;              /* Standard disc bullet points */
+     margin-left: 1.5rem;           /* Indentation for the list */
+     margin-bottom: 1rem;           /* Margin below the list */
+     color: #4b5563;                /* Tailwind's gray-600 color */
+     font-size: 0.875rem;           /* Tailwind's text-sm */
+ }
+  .modal-body p {
+     margin-bottom: 0.75rem;        /* Margin below paragraphs */
+     color: #4b5563;                /* Tailwind's gray-600 color */
+     font-size: 0.875rem;           /* Tailwind's text-sm */
+     line-height: 1.6;              /* Spacing between lines of text */
+ }
+
+ /* Styles from the original first <style> block in guide.html */
+ /* These might be general utility classes or specific component styles.
+    It's good practice to review if they are still needed or can be
+    replaced by Tailwind CSS or more specific new styles. */
+.inline {
+  background-color: #f7f7f7; /* Light gray background */
+  border:solid 1px #B0B0B0;  /* Solid gray border */
+}
+.error {
+	font-weight: bold;        /* Bold text for error messages */
+	color: #FF0000;          /* Red color for error messages */
+}
+.warning {
+	font-weight: bold;        /* Bold text for warning messages */
+}
+.message {
+	font-style: italic;       /* Italic text for general messages */
+}
+/* Common padding and border for source, output, warning, error, message blocks */
+.source, .output, .warning, .error, .message {
+	padding: 0 1em;           /* Padding: 0 top/bottom, 1em left/right */
+  border:solid 1px #F7F7F7; /* Very light gray border */
+}
+.source {
+  background-color: #f5f5f5; /* Slightly different light gray for source blocks */
+}
+/* Text alignment classes */
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.center {
+  text-align: center;
+}
+/* Syntax highlighting classes (likely for code snippets if used elsewhere) */
+.hl.num { /* Numbers */
+  color: #AF0F91;
+}
+.hl.sng { /* Single quoted strings or similar */
+  color: #317ECC;
+}
+.hl.com { /* Comments */
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt { /* Options or operators */
+  color: #000000;
+}
+.hl.def { /* Definitions or default text */
+  color: #585858;
+}
+.hl.kwa { /* Keyword A (e.g., primary keywords) */
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb { /* Keyword B (e.g., secondary keywords) */
+  color: #B05A65;
+}
+.hl.kwc { /* Keyword C (e.g., types or constants) */
+  color: #55aa55;
+}
+.hl.kwd { /* Keyword D (e.g., control flow keywords) */
+  color: #BC5A65;
+  font-weight: bold;
+}
